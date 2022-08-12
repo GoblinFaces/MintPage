@@ -110,6 +110,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       {/* Top Section */}
       <h1 className={styles.h1}>Real Goblins</h1>
+      <h1 className={styles.h1}>Sold out!</h1>
       {address ? (<p>Your address is: {address} and {claimCount.toString()} out of 606 items are claimed so far! </p>) : (address)}
 
       <p className={styles.describe}>
