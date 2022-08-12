@@ -33,7 +33,7 @@ const Home: NextPage = () => {
 
       try {
         const claimedNFTCount = await signatureDrop?.totalClaimedSupply();
-        setclaimCount(parseInt(claimedNFTCount?.toString()));
+        setclaimCount(parseInt(claimedNFTCount?.toString()!));
 
 
       } catch (e) {
