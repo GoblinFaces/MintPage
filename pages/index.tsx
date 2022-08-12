@@ -10,6 +10,8 @@ import {
   SignedPayload721WithQuantitySignature,
 } from "@thirdweb-dev/sdk";
 import type { NextPage } from "next";
+import React, { useState, useEffect } from 'react'
+
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
@@ -17,10 +19,30 @@ const Home: NextPage = () => {
   const connectWithMetamask = useMetamask();
   const isMismatch = useNetworkMismatch();
   const [, switchNetwork] = useNetwork();
+  const [claimCount, setclaimCount] = useState(0); // <--- useState is the hook
 
   const signatureDrop = useSignatureDrop(
     "0x53225e9F83DD01c44C6faD1cCE5c0a6f9b240427"
   );
+
+  useEffect(() => {
+    // Update the document title using the browser API
+    document.title = `Goblin Faces`;
+
+    (async function () {
+
+      try {
+        const claimedNFTCount = await signatureDrop?.totalclaimedSupply();
+        setclaimCount(claimedNFTCount);
+
+        console.log(`NFTs claimed so far: ${claimedNFTCount}`);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  });
+
+
 
   async function claim() {
     if (!address) {
@@ -32,6 +54,8 @@ const Home: NextPage = () => {
       switchNetwork?.(ChainId.Mainnet);
       return;
     }
+
+
 
     try {
       const tx = await signatureDrop?.claimTo(address, 1);
@@ -86,7 +110,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       {/* Top Section */}
       <h1 className={styles.h1}>Goblin Faces</h1>
-      {address ? (<p>Your address is: {address}ß</p>) : (address)}
+      {address ? (<p>Your address is: {address} and {claimCount.toString()} out of are 606 items claimed so far! </p>) : (address)}
 
       <p className={styles.describe}>
         <a href="https://opensea.io/collection/thirdweb-community">
