@@ -33,9 +33,9 @@ const Home: NextPage = () => {
 
       try {
         const claimedNFTCount = await signatureDrop?.totalClaimedSupply();
-        setclaimCount(claimedNFTCount);
+        setclaimCount(claimedNFTCount?.toString());
 
-        console.log(`NFTs claimed so far: ${claimedNFTCount}`);
+
       } catch (e) {
         console.error(e);
       }
