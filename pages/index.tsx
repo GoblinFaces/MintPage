@@ -139,13 +139,13 @@ const Home: NextPage = () => {
               className={styles.cardImg}
             />
 
-            <button onClick={() => claim()}
-              className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
-            >Mint</button>
-            <p className={styles.selectBoxDescription}>
-              Each address can claim one NFT!
-            </p>
-          </div>
+            <button}
+            className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
+            >Sold out!</button>
+          <p className={styles.selectBoxDescription}>
+            Each address can claim one NFT!
+          </p>
+        </div>
 
           {/* }
           <div
@@ -164,17 +164,18 @@ const Home: NextPage = () => {
               signature-based minting.
             </p>
       </div>*/}
-        </div>
-
-      ) : (
-        <button
-          className={styles.mainButton}
-          onClick={() => connectWithMetamask()}
-        >
-          Connect Wallet
-        </button>
-      )}
     </div>
+
+  ) : (
+    <button
+      className={styles.mainButton}
+      onClick={() => connectWithMetamask()}
+    >
+      Connect Wallet
+    </button>
+  )
+}
+    </div >
   );
 };
 
