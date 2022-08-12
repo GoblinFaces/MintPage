@@ -27,7 +27,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     // Update the document title using the browser API
-    document.title = `Goblin Faces`;
+    document.title = `Real Goblins`;
 
     (async function () {
 
@@ -109,35 +109,44 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       {/* Top Section */}
-      <h1 className={styles.h1}>Goblin Faces</h1>
-      {address ? (<p>Your address is: {address} and {claimCount.toString()} out of are 606 items claimed so far! </p>) : (address)}
+      <h1 className={styles.h1}>Real Goblins</h1>
+      {address ? (<p>Your address is: {address} and {claimCount.toString()} out of 606 items are claimed so far! </p>) : (address)}
 
       <p className={styles.describe}>
-        <a href="https://opensea.io/collection/thirdweb-community">
-          Goblin Faces
+        <a href="https://opensea.io/collection/real-goblins">
+          Real Goblins
         </a>{" "}
         FAAAAAAAck YAAAAAAAUUUUUGGGHHHHH gobblins faces goblinns faces GobLIN FAcES wekm mfers ta goblin world yoo mfers DEgEN RATS oooooh tihs is Besssssttttt NFFTTTEEEEESSSS ever cHaaaoooo
       </p>
-
+      <p><a href="https://etherscan.io/address/0x53225e9f83dd01c44c6fad1cce5c0a6f9b240427">
+        Etherscan
+      </a>&nbsp;&nbsp;
+        <a href="https://twitter.com/realgoblinsnft">
+          Twitter
+        </a>
+      </p>
       {address ? (
 
         <div className={styles.nftBoxGrid}>
           {/* Mint a new NFT */}
           <div
             className={styles.optionSelectBox}
-            role="button"
-            onClick={() => claim()}
+
           >
             <img
               src={`https://gateway.thirdweb.dev/ipfs/QmZiBRj7s8ww1qAkXudeG73XD7KqbGnn7dqf8ZBrvGjoL7/0.gif`}
               alt="drop"
               className={styles.cardImg}
             />
-            <h2 className={styles.selectBoxTitle}>Click here to claim your NFT</h2>
+
+            <button onClick={() => claim()}
+              className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
+            >Mint</button>
             <p className={styles.selectBoxDescription}>
               Each address can claim one NFT!
             </p>
           </div>
+
           {/* }
           <div
             className={styles.optionSelectBox}
@@ -156,6 +165,7 @@ const Home: NextPage = () => {
             </p>
       </div>*/}
         </div>
+
       ) : (
         <button
           className={styles.mainButton}
