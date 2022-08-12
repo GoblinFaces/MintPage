@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     (async function () {
 
       try {
-        const claimedNFTCount = await signatureDrop?.totalclaimedSupply();
+        const claimedNFTCount = await signatureDrop?.totalClaimedSupply();
         setclaimCount(claimedNFTCount);
 
         console.log(`NFTs claimed so far: ${claimedNFTCount}`);
