@@ -176,24 +176,7 @@ const Home: NextPage = () => {
                   </button>
                 </div>
 
-                <button
-                  className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
-                  onClick={mint}
-                  disabled={claimNFT.isLoading}
-                >
-                  {claimNFT.isLoading
-                    ? 'Minting...'
-                    : `Mint${quantity > 1 ? ` ${quantity}` : ''}${activeClaimCondition?.price.eq(0)
-                      ? ' (Free)'
-                      : activeClaimCondition?.currencyMetadata.displayValue
-                        ? ` (${formatUnits(
-                          priceToMint,
-                          activeClaimCondition.currencyMetadata.decimals,
-                        )} ${activeClaimCondition?.currencyMetadata.symbol
-                        })`
-                        : ''
-                    }`}
-                </button>
+               
               </>
             )
           ) : (
