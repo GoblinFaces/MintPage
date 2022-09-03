@@ -96,7 +96,8 @@ const Home: NextPage = () => {
           {/* Description of your NFT Collection */}
           <p className={styles.description}>{contractMetadata?.description}</p>
           {address ? (<div><p className={styles.description}>Your address is: {address} </p>
-            </div>) : (address)}
+           <p style={{ color: 'red', fontWeight: "bold" }} className={styles.description}>IMPORTANT: 1 mint per wallet!
+            </p> </div>) : (address)}
         </div>
 
         <div className={styles.imageSide}>
