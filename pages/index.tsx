@@ -109,8 +109,10 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       {/* Top Section */}
-      <h1 className={styles.h1}>Real Goblins</h1>
-      <h1 className={styles.h1}>Sold out!</h1>
+      <h1 className={styles.h1}>Real Goblins collection is sold out!</h1>
+      <h1 className={styles.h1}>Be prepared for Real Goblins Pets collection!</h1>
+      <h1 className={styles.h1}>Mint is going to be live at 6 pm UTC September 3rd! (first two hours is going to be free mint for whitelisted addresses)</h1>
+
       {address ? (<p>Your address is: {address} and {claimCount.toString()} out of 606 items are claimed so far! </p>) : (address)}
 
       <p className={styles.describe}>
