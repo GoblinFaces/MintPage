@@ -97,7 +97,10 @@ const Home: NextPage = () => {
           <p className={styles.description}>{contractMetadata?.description}</p>
           {address ? (<div><p className={styles.description}>Your address is: {address} </p>
            <p style={{ color: 'red', fontWeight: "bold" }} className={styles.description}>IMPORTANT: 1 mint per wallet!
-            </p> </div>) : (address)}
+            </p>
+              <p className={styles.description}>   <a href="https://etherscan.io/address/0x8c4aa1fb11890cfb310f2002b39c9a1ff9a4f054">
+                Etherscan</a></p>
+            </div>) : (address)}
         </div>
 
         <div className={styles.imageSide}>
