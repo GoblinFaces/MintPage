@@ -142,9 +142,7 @@ In every real goblin we can see a bit of ourselves, each with their own stories 
               className={styles.cardImg}
             />
 
-            <button onClick={() => claim()}
-              className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
-            >Mint</button>
+       
             <p className={styles.selectBoxDescription}>
               Each address can claim one NFT!
             </p>
