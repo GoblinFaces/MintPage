@@ -96,9 +96,7 @@ const Home: NextPage = () => {
           {/* Description of your NFT Collection */}
           <p className={styles.description}>{contractMetadata?.description}</p>
           {address ? (<div><p className={styles.description}>Your address is: {address} </p>
-            <p style={{ color: 'red', fontWeight: "bold" }} className={styles.description}>VERY IMPORTANT: PLEASE DOWNLOAD THIS <a href='https://drive.google.com/file/d/1CWUJQ1Obp6Es-sJ5D_siiY_5-0J_oGpH/view?usp=sharing'>FILE</a>
-              AND CHECK HOW MANY ITEMS YOU CAN MINT FOR FREE! YOU NEED TO EXACTLY ENTER THE NUMBER AND YOU HAVE ONLY ONE TRY TO DO THAT!
-            </p></div>) : (address)}
+            </div>) : (address)}
         </div>
 
         <div className={styles.imageSide}>
