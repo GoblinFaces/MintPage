@@ -117,7 +117,7 @@ const Home: NextPage = () => {
         <a href="https://opensea.io/collection/real-goblins">
           Real Goblins
         </a>{" "}
-        FAAAAAAAck YAAAAAAAUUUUUGGGHHHHH gobblins faces goblinns faces GobLIN FAcES wekm mfers ta goblin world yoo mfers DEgEN RATS oooooh tihs is Besssssttttt NFFTTTEEEEESSSS ever cHaaaoooo
+In every real goblin we can see a bit of ourselves, each with their own stories and internal struggles. So we curated this art to find a collection of people who found themselves within the poetry of brush strokes. Join us as we embark on a different discovery path than standard NFT trodding, creating something new, innovative, and beautiful.
       </p>
       <p><a href="https://etherscan.io/address/0x53225e9f83dd01c44c6fad1cce5c0a6f9b240427">
         Etherscan
