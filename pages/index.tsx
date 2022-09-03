@@ -1,180 +1,224 @@
 import {
-  useAddress,
-  useMetamask,
-  useSignatureDrop,
-  useNetwork,
-  useNetworkMismatch,
-} from "@thirdweb-dev/react";
-import {
   ChainId,
-  SignedPayload721WithQuantitySignature,
-} from "@thirdweb-dev/sdk";
-import type { NextPage } from "next";
-import React, { useState, useEffect } from 'react'
+  useClaimedNFTSupply,
+  useContractMetadata,
+  useNetwork,
+  useNFTDrop,
+  useUnclaimedNFTSupply,
+  useActiveClaimCondition,
+  useClaimNFT,
+  useWalletConnect,
+  useCoinbaseWallet,
+} from '@thirdweb-dev/react';
+import { useNetworkMismatch } from '@thirdweb-dev/react';
+import { useAddress, useMetamask } from '@thirdweb-dev/react';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import type { NextPage } from 'next';
+import { useState } from 'react';
+import styles from '../styles/Theme.module.css';
 
-import styles from "../styles/Home.module.css";
+// Put Your NFT Drop Contract address from the dashboard here
+const myNftDropContractAddress = '0x8C4aA1fb11890CFB310f2002b39c9a1ff9a4f054';
 
 const Home: NextPage = () => {
+  const nftDrop = useNFTDrop(myNftDropContractAddress);
   const address = useAddress();
   const connectWithMetamask = useMetamask();
-  const isMismatch = useNetworkMismatch();
+  const connectWithWalletConnect = useWalletConnect();
+  const connectWithCoinbaseWallet = useCoinbaseWallet();
+  const isOnWrongNetwork = useNetworkMismatch();
+  const claimNFT = useClaimNFT(nftDrop);
   const [, switchNetwork] = useNetwork();
-  const [claimCount, setclaimCount] = useState(0); // <--- useState is the hook
+  // The amount the user claims
+  const [quantity, setQuantity] = useState(1); // default to 1
 
-  const signatureDrop = useSignatureDrop(
-    "0x53225e9F83DD01c44C6faD1cCE5c0a6f9b240427"
+  // Load contract metadata
+  const { data: contractMetadata } = useContractMetadata(
+    myNftDropContractAddress,
   );
 
-  useEffect(() => {
-    // Update the document title using the browser API
-    document.title = `Real Goblins`;
+  // Load claimed supply and unclaimed supply
+  const { data: unclaimedSupply } = useUnclaimedNFTSupply(nftDrop);
+  const { data: claimedSupply } = useClaimedNFTSupply(nftDrop);
 
-    (async function () {
+  // Load the active claim condition
+  const { data: activeClaimCondition } = useActiveClaimCondition(nftDrop);
 
-      try {
-        const claimedNFTCount = await signatureDrop?.totalClaimedSupply();
-        setclaimCount(parseInt(claimedNFTCount?.toString()!));
+  // Check if there's NFTs left on the active claim phase
+  const isNotReady =
+    activeClaimCondition &&
+    parseInt(activeClaimCondition?.availableSupply) === 0;
 
+  // Check if there's any NFTs left
+  const isSoldOut = unclaimedSupply?.toNumber() === 0;
 
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  });
+  // Check price
+  const price = parseUnits(
+    activeClaimCondition?.currencyMetadata.displayValue || '0',
+    activeClaimCondition?.currencyMetadata.decimals,
+  );
 
+  // Multiply depending on quantity
+  const priceToMint = price.mul(quantity);
 
-
-  async function claim() {
-    if (!address) {
-      connectWithMetamask();
-      return;
-    }
-
-    if (isMismatch) {
-      switchNetwork?.(ChainId.Mainnet);
-      return;
-    }
-
-
-
-    try {
-      const tx = await signatureDrop?.claimTo(address, 1);
-      alert(`Succesfully minted NFT!`);
-    } catch (error: any) {
-      alert(error?.message);
-    }
+  // Loading state while we fetch the metadata
+  if (!nftDrop || !contractMetadata) {
+    return <div className={styles.container}>Loading...</div>;
   }
 
-  async function claimWithSignature() {
-    if (!address) {
-      connectWithMetamask();
-      return;
-    }
-
-    if (isMismatch) {
+  // Function to mint/claim an NFT
+  const mint = async () => {
+    if (isOnWrongNetwork) {
       switchNetwork && switchNetwork(ChainId.Mainnet);
       return;
     }
 
-    const signedPayloadReq = await fetch(`/api/generate-mint-signature`, {
-      method: "POST",
-      body: JSON.stringify({
-        address: address,
-      }),
-    });
-
-    console.log(signedPayloadReq);
-
-    if (signedPayloadReq.status === 400) {
-      alert(
-        "Looks like you don't own an early access NFT :( You don't qualify for the free mint."
-      );
-      return;
-    } else {
-      try {
-        const signedPayload =
-          (await signedPayloadReq.json()) as SignedPayload721WithQuantitySignature;
-
-        console.log(signedPayload);
-
-        const nft = await signatureDrop?.signature.mint(signedPayload);
-
-        alert(`Succesfully minted NFT!`);
-      } catch (error: any) {
-        alert(error?.message);
-      }
-    }
-  }
+    claimNFT.mutate(
+      { to: address as string, quantity },
+      {
+        onSuccess: () => {
+          alert(`Successfully minted NFT${quantity > 1 ? 's' : ''}!`);
+        },
+        onError: (err: any) => {
+          console.error(err);
+          alert(err?.message || 'Something went wrong');
+        },
+      },
+    );
+  };
 
   return (
     <div className={styles.container}>
-      {/* Top Section */}
-      <h1 className={styles.h1}>Real Goblins collection is sold out!</h1>
-      <h1 className={styles.h1}>Be prepared for Real Goblins Pets collection!</h1>
-      <h1 className={styles.h1}>Mint is going to be live at 6 pm UTC September 3rd! (first two hours is going to be free mint for whitelisted addresses)</h1>
-
-      {address ? (<p>Your address is: {address} and {claimCount.toString()} out of 606 items are claimed so far! </p>) : (address)}
-
-      <p className={styles.describe}>
-        <a href="https://opensea.io/collection/real-goblins">
-          Real Goblins
-        </a>{" "}
-In every real goblin we can see a bit of ourselves, each with their own stories and internal struggles. So we curated this art to find a collection of people who found themselves within the poetry of brush strokes. Join us as we embark on a different discovery path than standard NFT trodding, creating something new, innovative, and beautiful.
-      </p>
-      <p><a href="https://etherscan.io/address/0x53225e9f83dd01c44c6fad1cce5c0a6f9b240427">
-        Etherscan
-      </a>&nbsp;&nbsp;
-        <a href="https://twitter.com/realgoblinsnft">
-          Twitter
-        </a>
-      </p>
-      {address ? (
-
-        <div className={styles.nftBoxGrid}>
-          {/* Mint a new NFT */}
-          <div
-            className={styles.optionSelectBox}
-
-          >
-            <img
-              src={`https://gateway.thirdweb.dev/ipfs/QmZiBRj7s8ww1qAkXudeG73XD7KqbGnn7dqf8ZBrvGjoL7/0.gif`}
-              alt="drop"
-              className={styles.cardImg}
-            />
-
-       
-            <p className={styles.selectBoxDescription}>
-              Each address can claim one NFT!
-            </p>
-          </div>
-
-          {/* }
-          <div
-            className={styles.optionSelectBox}
-            role="button"
-            onClick={() => claimWithSignature()}
-          >
-            <img
-              src={`/icons/analytics.png`}
-              alt="signature-mint"
-              className={styles.cardImg}
-            />
-            <h2 className={styles.selectBoxTitle}>Mint with Signature</h2>
-            <p className={styles.selectBoxDescription}>
-              Check if you are eligible to mint an NFT for free, by using
-              signature-based minting.
-            </p>
-      </div>*/}
+      <div className={styles.mintInfoContainer}>
+        <div className={styles.infoSide}>
+          {/* Title of your NFT Collection */}
+          <h1>{contractMetadata?.name}</h1>
+          {/* Description of your NFT Collection */}
+          <p className={styles.description}>{contractMetadata?.description}</p>
+          {address ? (<div><p className={styles.description}>Your address is: {address} </p>
+            <p style={{ color: 'red', fontWeight: "bold" }} className={styles.description}>VERY IMPORTANT: PLEASE DOWNLOAD THIS <a href='https://drive.google.com/file/d/1CWUJQ1Obp6Es-sJ5D_siiY_5-0J_oGpH/view?usp=sharing'>FILE</a>
+              AND CHECK HOW MANY ITEMS YOU CAN MINT FOR FREE! YOU NEED TO EXACTLY ENTER THE NUMBER AND YOU HAVE ONLY ONE TRY TO DO THAT!
+            </p></div>) : (address)}
         </div>
 
-      ) : (
-        <button
-          className={styles.mainButton}
-          onClick={() => connectWithMetamask()}
-        >
-          Connect Wallet
-        </button>
-      )}
+        <div className={styles.imageSide}>
+          {/* Image Preview of NFTs */}
+          <img
+            className={styles.image}
+            src={contractMetadata?.image}
+            alt={`${contractMetadata?.name} preview image`}
+          />
+
+          {/* Amount claimed so far */}
+          <div className={styles.mintCompletionArea}>
+            <div className={styles.mintAreaLeft}>
+              <p>Total Minted</p>
+            </div>
+            <div className={styles.mintAreaRight}>
+              {claimedSupply && unclaimedSupply ? (
+                <p>
+                  {/* Claimed supply so far */}
+                  <b>{claimedSupply?.toNumber()}</b>
+                  {' / '}
+                  {
+                    // Add unclaimed and claimed supply to get the total supply
+                    claimedSupply?.toNumber() + unclaimedSupply?.toNumber()
+                  }
+                </p>
+              ) : (
+                // Show loading state if we're still loading the supply
+                <p>Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Show claim button or connect wallet button */}
+          {address ? (
+            // Sold out or show the claim button
+            isSoldOut ? (
+              <div>
+                <h2>Sold Out</h2>
+              </div>
+            ) : isNotReady ? (
+              <div>
+                <h2>Not ready to be minted yet</h2>
+              </div>
+            ) : (
+              <>
+
+                <div className={styles.quantityContainer}>
+                  <p>Mint quantities: </p>
+                  <button
+                    className={`${styles.quantityControlButton}`}
+                    onClick={() => setQuantity(quantity - 1)}
+                    disabled={quantity <= 1}
+                  >
+                    -
+                  </button>
+
+                  <h4>{quantity}</h4>
+
+                  <button
+                    className={`${styles.quantityControlButton}`}
+                    onClick={() => setQuantity(quantity + 1)}
+                    disabled={
+                      quantity >=
+                      parseInt(
+                        activeClaimCondition?.quantityLimitPerTransaction ||
+                        '0',
+                      )
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+
+                <button
+                  className={`${styles.mainButton} ${styles.spacerTop} ${styles.spacerBottom}`}
+                  onClick={mint}
+                  disabled={claimNFT.isLoading}
+                >
+                  {claimNFT.isLoading
+                    ? 'Minting...'
+                    : `Mint${quantity > 1 ? ` ${quantity}` : ''}${activeClaimCondition?.price.eq(0)
+                      ? ' (Free)'
+                      : activeClaimCondition?.currencyMetadata.displayValue
+                        ? ` (${formatUnits(
+                          priceToMint,
+                          activeClaimCondition.currencyMetadata.decimals,
+                        )} ${activeClaimCondition?.currencyMetadata.symbol
+                        })`
+                        : ''
+                    }`}
+                </button>
+              </>
+            )
+          ) : (
+            <div className={styles.buttons}>
+              <button
+                className={styles.mainButton}
+                onClick={connectWithMetamask}
+              >
+                Connect MetaMask
+              </button>
+              <button
+                className={styles.mainButton}
+                onClick={connectWithWalletConnect}
+              >
+                Connect with Wallet Connect
+              </button>
+              <button
+                className={styles.mainButton}
+                onClick={connectWithCoinbaseWallet}
+              >
+                Connect with Coinbase Wallet
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Powered by thirdweb */}{' '}
+
     </div>
   );
 };
